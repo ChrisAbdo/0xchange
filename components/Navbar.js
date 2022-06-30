@@ -1,10 +1,10 @@
 import Link from "next/link";
 import { useState } from "react";
 import ThemeSwitcher from "./ThemeSwitcher";
-
-import { Button } from "@chakra-ui/react";
-
+import styles from "../styles/Navbar.module.css";
+import { Button, Menu, MenuButton, MenuList, MenuItem } from "@chakra-ui/react";
 import { ethers } from "ethers";
+import { ChevronDownIcon } from "@chakra-ui/icons";
 
 function Navbar() {
   const [walletAddress, setWalletAddress] = useState("");
@@ -38,23 +38,70 @@ function Navbar() {
     }
   }
 
+  async function changeWallet() {
+    const accounts = await window.ethereum
+      .request({
+        method: "wallet_requestPermissions",
+        params: [
+          {
+            eth_accounts: {},
+          },
+        ],
+      })
+      .then(() =>
+        ethereum.request({
+          method: "eth_requestAccounts",
+        })
+      );
+    setWalletAddress(accounts[0]);
+    const account = accounts[0];
+  }
+
   return (
-    <div className="flex w-full justify-between items-center px-4 py-2 border-b">
-      <div className="flex items-center">
-        <Link href="/">
-          <h1 className="text-4xl  cursor-pointer font-bold">0xchange</h1>
+    <div className="flex w-full justify-between px-4 py-2 border-b bg-gray-500">
+      <Link href="/">
+        <h1 className={styles.navbarText}>0xChange</h1>
+      </Link>
+      <div className={styles.navbarHeader}>
+        <Link href="/transfer">
+          <Button variant="ghost">Transfer</Button>
+        </Link>
+        <Link href="/exchange">
+          <Button variant="ghost">Exchange</Button>
+        </Link>
+        <Link href="/wallet">
+          <Button variant="ghost">Wallet</Button>
         </Link>
       </div>
       <div className="flex items-center">
+        &nbsp;&nbsp;
         <ThemeSwitcher />
         &nbsp;&nbsp;
-        <Button colorScheme="purple" onClick={requestAccount}>
-          {walletAddress.length > 0 &&
-            walletAddress.substring(0, 5) +
-              "..." +
-              walletAddress.substring(walletAddress.length - 4)}
-          {walletAddress.length === 0 && "Connect Wallet"}
-        </Button>
+        {walletAddress ? (
+          <Menu>
+            <MenuButton
+              as={Button}
+              rightIcon={<ChevronDownIcon />}
+              colorScheme="purple"
+              onClick={requestAccount}
+            >
+              {walletAddress.length > 0 &&
+                walletAddress.substring(0, 5) +
+                  "..." +
+                  walletAddress.substring(walletAddress.length - 4)}
+              {walletAddress.length === 0 && "Connect Wallet"}
+            </MenuButton>
+            <MenuList>
+              <MenuItem>View Profile</MenuItem>
+              <MenuItem onClick={changeWallet}>Change Wallet</MenuItem>
+              <MenuItem>Disconnect</MenuItem>
+            </MenuList>
+          </Menu>
+        ) : (
+          <Button onClick={connectWallet} colorScheme="purple" className="mr-2">
+            Connect Wallet
+          </Button>
+        )}
       </div>
     </div>
   );
