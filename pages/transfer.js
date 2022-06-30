@@ -38,6 +38,7 @@ async function transferEth(sender, receiver, strEther) {
 const transfer = () => {
   return (
     <div>
+      <title>Transfers</title>
       <link
         href="https://fonts.googleapis.com/css2?family=Comforter&family=Poppins:wght@300&family=Supermercado+One&display=swap"
         rel="stylesheet"
