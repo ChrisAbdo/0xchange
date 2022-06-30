@@ -21,6 +21,18 @@ function Navbar() {
           method: "eth_requestAccounts",
         });
         setWalletAddress(accounts[0]);
+        const provider = new ethers.providers.Web3Provider(
+          window.ethereum,
+          "any"
+        );
+        provider.on("network", (newNetwork, oldNetwork) => {
+          // When a Provider makes its initial connection, it emits a "network"
+          // event with a null oldNetwork along with the newNetwork. So, if the
+          // oldNetwork exists, it represents a changing network
+          if (oldNetwork) {
+            window.location.reload();
+          }
+        });
       } catch (error) {
         console.log("Error connecting...");
       }
@@ -71,6 +83,9 @@ function Navbar() {
         </Link>
         <Link href="/wallet">
           <Button variant="ghost">Wallet</Button>
+        </Link>
+        <Link href="/messages">
+          <Button variant="ghost">Messages</Button>
         </Link>
       </div>
       <div className="flex items-center">
